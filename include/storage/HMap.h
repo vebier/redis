@@ -1,9 +1,12 @@
-#ifndef REDIS_HASHTABLE_H
-#define REDIS_HASHTABLE_H
-#include <stdint.h>
+#ifndef REDIS_HMAP_H
+#define REDIS_HMAP_H
+#include "buffer.h"
 #include <cassert>
 #include <functional>
 #include <string>
+#include <any>
+
+
 
 // 哈希表节点，应该被嵌入到数据负载中
 struct HNode {
@@ -45,6 +48,19 @@ struct HNode {
 
 };
 
+/**
+ * @brief 比较两个HNode指针指向的Entry结构体的key值是否相等
+ * @param lhs=左操作数HNode指针
+ * @param rhs=右操作数HNode指针
+ * @return key值是否相等
+ */
+template<typename EntryType>
+static bool entry_eq(HNode *lhs, HNode *rhs) {
+    EntryType *le = container_of(lhs, &EntryType::node);
+    EntryType *re = container_of(rhs, &EntryType::node);
+    return le->key == re->key;
+}
+
 struct Htab{
     HNode** tab;
     size_t  mask;//哈希表槽位掩码，+1就是容量
@@ -78,6 +94,14 @@ struct Htab{
      * @return 返回已经从哈希表中删除的节点指针
      */
     HNode*  h_detach(HNode** from);
+
+    /**
+     * @brief 遍历哈希表所有节点，调用回调函数
+     * @param func 回调函数，返回false则停止遍历
+     */
+    bool h_foreach(const std::function<bool(HNode*, std::any&)>& func,std::any& arg);
+
+    void h_clear();
 };
 
 class HMap{
@@ -102,6 +126,25 @@ public:
      * @return 返回已经从哈希表中删除的节点指针
      */
     HNode*  hm_delete(HNode* key,std::function<bool(HNode*,HNode*)> eq);
+
+    /**
+     * @brief 清空哈希表
+     */
+    void hm_clear();
+
+    /**
+     * @brief 获取哈希表节点数量
+     * @return 哈希表节点数量
+     */
+    size_t hm_size();
+
+    /**
+     * @brief 遍历哈希表所有节点，调用回调函数
+     * @param func 回调函数，返回false则停止遍历
+     */
+    void hm_foreach(const std::function<bool(HNode*, std::any&)>& func, std::any& arg);
+
+
 private:
     /**
      * @brief 触发哈希表渐进式扩容
@@ -123,27 +166,9 @@ struct Entry {
     Value val;
     HNode node;
 };
-class Response;
 
-class RedisDB {
-public:
-    RedisDB() = default;
-    ~RedisDB() = default;
 
-    // 获取键值
-    void get(std::vector<std::string> &cmd, Response &out);
-    // 设置键值
-    void set(std::vector<std::string> &cmd, Response &out);
-    // 删除键
-    void del(std::vector<std::string> &cmd, Response &out);
 
-private:
-    HMap db;  // 使用哈希表存储数据
-};
 
-struct Response {
-    int32_t status = 0;
-    std::vector<uint8_t> data;
-};
 
-#endif //REDIS_HASHTABLE_H
+#endif //REDIS_HMAP_H
