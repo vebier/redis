@@ -12,17 +12,10 @@ set(INCLUDE_DIRS
         ${CMAKE_SOURCE_DIR}/include/storage
 )
 
-# 收集各模块的源文件
-file(GLOB NETWORK_SOURCES "src/network/*.cpp")
-file(GLOB PROTOCOL_SOURCES "src/protocol/*.cpp")
-file(GLOB SERVER_SOURCES "src/server/*.cpp")
-
 file(GLOB_RECURSE SRC "src/*.cpp")
 
 set(ALL_SOURCES
         ${SRC}
-        include/core/redis_db.h
-        src/core/redis_db.cpp
         include/core/singleton.h
 )
 

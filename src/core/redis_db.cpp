@@ -3,11 +3,11 @@
 
 void RedisDB::get(std::vector<std::string> &cmd, Buffer &out) {
     if (cmd.size() != 2) {
-        out.out_err(1, "ERR wrong number of arguments for 'get' command");  // ✅ 返回错误
+        out.out_err(1, "ERR wrong number of arguments for 'get' command");
         return;
     }
     Entry<std::string, std::string> query_entry;
-    query_entry.key = cmd[1];  // 不要用 swap
+    query_entry.key = cmd[1];
     query_entry.node.hcode = str_hash(reinterpret_cast<const uint8_t*>(query_entry.key.data()),query_entry.key.size());
     auto node = db.hm_lookup(&query_entry.node, &entry_eq<Entry<std::string, std::string>>);
     if (!node) {
@@ -20,11 +20,11 @@ void RedisDB::get(std::vector<std::string> &cmd, Buffer &out) {
 
 void RedisDB::set(std::vector<std::string> &cmd, Buffer &out){
     if (cmd.size() != 3) {
-        out.out_err(1, "ERR wrong number of arguments for 'set' command");  // ✅ 返回错误
+        out.out_err(1, "ERR wrong number of arguments for 'set' command");
         return;
     }
     Entry<std::string, std::string> query_entry;
-    query_entry.key = cmd[1];  // 不要用 swap
+    query_entry.key = cmd[1];
     query_entry.node.hcode = str_hash(reinterpret_cast<const uint8_t*>(query_entry.key.data()),query_entry.key.size());
     auto node = db.hm_lookup(&query_entry.node, &entry_eq<Entry<std::string, std::string>>);
     if(node){
@@ -41,12 +41,11 @@ void RedisDB::set(std::vector<std::string> &cmd, Buffer &out){
 
 void RedisDB::del(std::vector<std::string> &cmd, Buffer &out){
     if (cmd.size() != 2) {
-        out.out_err(1, "ERR wrong number of arguments for 'del' command");  // ✅ 返回错误
+        out.out_err(1, "ERR wrong number of arguments for 'del' command");
         return;
     }
-// ✅ 创建临时 Entry 用于查询
     Entry<std::string, std::string> query_entry;
-    query_entry.key = cmd[1];  // 不要用 swap
+    query_entry.key = cmd[1];
     query_entry.node.hcode = str_hash(reinterpret_cast<const uint8_t*>(query_entry.key.data()),query_entry.key.size());
     auto node = db.hm_delete(&query_entry.node, &entry_eq<Entry<std::string, std::string>>);
     if(node){
@@ -57,14 +56,12 @@ void RedisDB::del(std::vector<std::string> &cmd, Buffer &out){
 }
 
 void RedisDB::keys(std::vector<std::string>& cmd, Buffer& out){
-    out.out_arr(static_cast<uint32_t>(db.hm_size()));
-    std::any arg = &out;  // ✅ 直接传递指针
-    db.hm_foreach(&cb_keys, arg);
+    out.out_arr(static_cast<uint32_t>(db.hm_size()));// ✅ 直接传递指针
+    db.hm_foreach(&cb_keys, out);
 }
 
-bool RedisDB::cb_keys(HNode* node, std::any& arg){
-    Buffer* out = std::any_cast<Buffer*>(arg);  // ✅ 提取指针
+bool RedisDB::cb_keys(HNode* node, Buffer& out){
     const std::string &key = container_of(node,&Entry<std::string, std::string>::node)->key;
-    out->out_str(key, key.size());
+    out.out_str(key, key.size());
     return true;
 }

@@ -99,7 +99,7 @@ struct Htab{
      * @brief 遍历哈希表所有节点，调用回调函数
      * @param func 回调函数，返回false则停止遍历
      */
-    bool h_foreach(const std::function<bool(HNode*, std::any&)>& func,std::any& arg);
+    bool h_foreach(const std::function<bool(HNode*, Buffer&)>& func, Buffer& arg);
 
     void h_clear();
 };
@@ -142,7 +142,7 @@ public:
      * @brief 遍历哈希表所有节点，调用回调函数
      * @param func 回调函数，返回false则停止遍历
      */
-    void hm_foreach(const std::function<bool(HNode*, std::any&)>& func, std::any& arg);
+    void hm_foreach(const std::function<bool(HNode*, Buffer&)>& func, Buffer& arg);
 
 
 private:

@@ -119,7 +119,7 @@ HNode* Htab::h_detach(HNode** from){
     return node;
 }
 
-bool Htab::h_foreach(const std::function<bool(HNode*, std::any&)>& func,std::any& arg){
+bool Htab::h_foreach(const std::function<bool(HNode*, Buffer&)>& func, Buffer& arg){
     for(size_t i=0; mask!=0 && i<=mask; ++i){
         for(auto node=tab[i]; node!=nullptr; node=node->next){
             if(!func(node, arg)){
@@ -235,7 +235,7 @@ size_t HMap::hm_size(){
     return older.size + newer.size;
 }
 
-void HMap::hm_foreach(const std::function<bool(HNode*, std::any&)>& func, std::any& arg){
+void HMap::hm_foreach(const std::function<bool(HNode*, Buffer&)>& func, Buffer& arg){
     this->older.h_foreach(func, arg) && this->newer.h_foreach(func, arg);
 }
 

@@ -22,8 +22,10 @@ public:
     void keys(std::vector<std::string>& cmd, Buffer& out);
 
 private:
-    HMap db;  // 使用哈希表存储数据
-    static bool cb_keys(HNode* node, std::any& arg);
     RedisDB() = default;
+    // 提取节点key值写道输出缓冲区
+    static bool cb_keys(HNode* node, Buffer& out);
+private:
+    HMap db;
 };
 #endif //REDIS_REDIS_DB_H

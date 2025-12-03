@@ -51,7 +51,7 @@ static int32_t write_all(int fd, const char *buf, size_t n) {
 const size_t k_max_msg = 4096;
 
 static int32_t send_req(int fd, const std::vector<std::string> &cmd) {
-    uint32_t len = 4;
+    uint32_t len = 4; //这里的4字节是命令行参数个数nstr的长度
     for (const std::string &s : cmd) {
         len += 4 + s.size();
     }
@@ -60,9 +60,9 @@ static int32_t send_req(int fd, const std::vector<std::string> &cmd) {
     }
 
     char wbuf[4 + k_max_msg];
-    memcpy(&wbuf[0], &len, 4);  // assume little endian
-    uint32_t n = (uint32_t)cmd.size();
-    memcpy(&wbuf[4], &n, 4);
+    memcpy(&wbuf[0], &len, 4);  //总长度写入
+    uint32_t n = (uint32_t)cmd.size();//nstr
+    memcpy(&wbuf[4], &n, 4);//命令行参数个数写入
     size_t cur = 8;
     for (const std::string &s : cmd) {
         uint32_t p = (uint32_t)s.size();
