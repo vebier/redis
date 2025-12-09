@@ -5,8 +5,9 @@
 #include <functional>
 #include <string>
 #include <any>
+#include <memory>
 
-
+class ZSet;
 
 // 哈希表节点，应该被嵌入到数据负载中
 struct HNode {
@@ -166,6 +167,7 @@ struct Entry {
     Value val;
     HNode node;
 };
+
 
 
 

@@ -19,6 +19,8 @@ set(ALL_SOURCES
         include/core/singleton.h
 )
 
+file(GLOB NETWORK_SOURCES "src/network/*.cpp")
+
 # 服务端
 add_executable(main main.cpp ${ALL_SOURCES})
 target_include_directories(main PUBLIC ${INCLUDE_DIRS})

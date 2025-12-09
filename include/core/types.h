@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 enum class Code : uint8_t {
     TAG_NIL = 0,    // nil
@@ -22,6 +23,12 @@ enum class Status : int32_t {
     OK = 0,
     ERR = 1,
     NX = 2,
+};
+
+enum class DataType{
+    T_INIT  = 0,
+    T_STR   = 1,    // string
+    T_ZSET  = 2,    // sorted set
 };
 
 /**
@@ -51,6 +58,19 @@ T* container_of(M* ptr, M T::*member) {
 static uint64_t str_hash(const uint8_t *data, size_t len) {
     uint32_t h = 0x811C9DC5;
     for (size_t i = 0; i < len; i++) {
+        h = (h + data[i]) * 0x01000193;
+    }
+    return h;
+}
+
+/**
+ * @brief 计算字符串的哈希值
+ * @param data=字符串
+ * @return 哈希值
+ */
+static uint64_t str_hash(std::string& data) {
+    uint32_t h = 0x811C9DC5;
+    for (size_t i = 0; i < data.length(); i++) {
         h = (h + data[i]) * 0x01000193;
     }
     return h;
